@@ -2,9 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import requests
+import os 
 
 # To import tkcalendar we must beofre instal it with "pip install tkcalendar"
 from tkcalendar import *
+
+# To import openpyxl we must beofre instal it with "pip install openpyxl"
+import openpyxl 
 
 # Variables for total amount row
 total_amount = 0
@@ -120,6 +124,26 @@ table.grid(row=0, sticky="NSEW")
 # Add a tag with special background color for total amount
 table.tag_configure('TA', background='yellow')
 
+#=========================
+# Check excel file for expenses
+#=========================
+if os.path.exists('myExpenses.xlsx'):
+    wb = openpyxl.load_workbook('myExpenses.xlsx')
+    sheet = wb.active 
+    m_row = sheet.max_row
+    # Import datas from excel file
+    for i in range(1, m_row):
+        values = []
+        for j in range(1, 6):
+            cell_obj = sheet.cell(row = i, column = j)
+            values.append(cell_obj.value)
+        table.insert('', tk.END, values=values)
+    # Import total amount from excel file
+    table.insert('', tk.END, values=(sheet.cell(row = m_row, column=1).value, "USD"), iid="total_amount", tags=("TA"))
+else: 
+    wb = openpyxl.Workbook()   
+    sheet = wb.active 
+
 # Function to add expenses to the table
 def add_inputs(event):
     # Get all user inputs
@@ -135,6 +159,8 @@ def add_inputs(event):
     #Check if user added all infos
     if(amount and currency and category and payment and date):
         
+        amount = '{:.2f}'.format(float(amount))
+
         # Check if total amount table has been added before, if it delete it
         if(table.exists("total_amount")):
             table.delete("total_amount")
@@ -156,6 +182,13 @@ def add_inputs(event):
 
         # Add the total amount row to the expenses table
         table.insert('', tk.END, values=('{:.2f}'.format(total_amount), "USD"), iid="total_amount", tags=("TA"))
+        
+        # Add datas to the excel file
+        sheet.delete_rows(sheet.max_row)
+        sheet.append((amount, currency, category, payment, date)) 
+        sheet.append(('{:.2f}'.format(total_amount), "USD")) 
+        wb.save('myExpenses.xlsx')
+        
     else:
         messagebox.showerror(message="Please fill all inputs.", title="Error")
 
