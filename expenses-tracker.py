@@ -21,6 +21,11 @@ window.minsize(1000,700)
 window.columnconfigure(0,weight=1)
 window.rowconfigure(1,weight=1)
 
+# Add icons
+small_icon = tk.PhotoImage(file="icons/icon16.png")
+large_icon = tk.PhotoImage(file="icons/icon32.png")
+window.iconphoto(True, large_icon, small_icon)
+
 #Inputs Frame
 inputs_frame = tk.Frame(window)
 inputs_frame.grid(row=0, column=0, sticky="NSEW",pady=10)
