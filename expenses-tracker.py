@@ -42,7 +42,7 @@ results_frame.columnconfigure(0, weight=1)
 #=========================
 # Api URL and Headers
 url_symbols = "https://api.apilayer.com/fixer/symbols"
-headers= {"apikey": "2jAnAahYHdQz3n773JCvcmhYVoRwvuuT"}
+headers= {"apikey": "x2MS7Yd6SOOLmccFaimZqiObCAgJfoEW"}
 
 #Get all recurrencies symbols
 response = requests.get(url_symbols, headers=headers)
@@ -145,6 +145,7 @@ if os.path.exists('myExpenses.xlsx'):
         table.insert('', tk.END, values=values)
     # Import total amount from excel file
     table.insert('', tk.END, values=(sheet.cell(row = m_row, column=1).value, "USD"), iid="total_amount", tags=("TA"))
+    total_amount = float(sheet.cell(row = m_row, column=1).value)
 else: 
     wb = openpyxl.Workbook()   
     sheet = wb.active 
@@ -193,6 +194,9 @@ def add_inputs(event):
         sheet.append((amount, currency, category, payment, date)) 
         sheet.append(('{:.2f}'.format(total_amount), "USD")) 
         wb.save('myExpenses.xlsx')
+
+        # Empty amount input after add an expense
+        amount_entry.delete(0, tk.END)
         
     else:
         messagebox.showerror(message="Please fill all inputs.", title="Error")
